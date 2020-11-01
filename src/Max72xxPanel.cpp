@@ -40,7 +40,7 @@ Max72xxPanel::Max72xxPanel(byte csPin, byte hDisplays, byte vDisplays) : Adafrui
 
   byte displays = hDisplays * vDisplays;
   Max72xxPanel::hDisplays = hDisplays;
-	Max72xxPanel::bitmapSize = displays << 3;
+  Max72xxPanel::bitmapSize = displays << 3;
 
   Max72xxPanel::bitmap = (byte*)malloc(bitmapSize);
   Max72xxPanel::matrixRotation = (byte*)malloc(displays);
@@ -86,14 +86,13 @@ void Max72xxPanel::fillScreen(uint16_t color) {
   memset(bitmap, color ? 0xff : 0, bitmapSize);
 }
 
-void Max72xxPanel::drawPixel(int16_t xx, int16_t yy, uint16_t color) {
+void Max72xxPanel::drawPixel(const int16_t xx, const int16_t yy, const uint16_t color) {
 	// Operating in bytes is faster and takes less code to run. We don't
 	// need values above 200, so switch from 16 bit ints to 8 bit unsigned
 	// ints (bytes).
 	// Keep xx as int16_t so fix 16 panel limit
 	int16_t x = xx;
-	byte y = yy;
-	byte tmp;
+	int16_t y = yy;
 
 	if ( rotation ) {
 		// Implement Adafruit's rotation.
@@ -106,7 +105,7 @@ void Max72xxPanel::drawPixel(int16_t xx, int16_t yy, uint16_t color) {
 		}
 
 		if ( rotation & 1 ) {     								// rotation == 1 || rotation == 3
-			tmp = x; x = y; y = tmp;
+			int16_t tmp = x; x = y; y = tmp;
 		}
 	}
 
@@ -130,7 +129,7 @@ void Max72xxPanel::drawPixel(int16_t xx, int16_t yy, uint16_t color) {
 		y = 7 - y;
 	}
 	if ( r & 1 ) {     								   // 90 or 270 degrees
-		tmp = x; x = y; y = tmp;
+		int16_t tmp = x; x = y; y = tmp;
 	}
 
 	byte d = display / hDisplays;
