@@ -28,6 +28,16 @@
   #include "pins_arduino.h"
 #endif
 
+/**
+ * Matrix rotations enum
+ */
+enum Rotation : uint8_t {
+    NO = (0U),  // 	 *   0: no rotation
+    CW90,       //   *   1: 90 degrees clockwise
+    CW180,      //   *   2: 180 degrees
+    CCW90       //   *   3: 90 degrees counter clockwise
+};
+
 class Max72xxPanel : public Adafruit_GFX {
 
 public:
@@ -55,7 +65,8 @@ public:
 	 *   2: 180 degrees
 	 *   3: 90 degrees counter clockwise
 	 */
-	void setRotation(byte display, byte rotation);
+	void setRotation(const byte display, const byte rotation);
+	void setRotation(const byte display, const Rotation rotation);
 
 	/*
 	 * Implementation of Adafruit's setRotation(). Probably, you don't

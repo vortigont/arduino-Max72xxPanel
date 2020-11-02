@@ -17,8 +17,8 @@ void setup() {
 //  matrix.setPosition(2, 2, 0); // The third display is at <2, 0>
 //  matrix.setPosition(3, 3, 0); // And the last display is at <3, 0>
 //  ...
-//  matrix.setRotation(0, 2);    // The first display is position upside down
-//  matrix.setRotation(3, 2);    // The same hold for the last display
+//  matrix.setRotation(0, Rotation::CW180);     // The first display is position upside down  (CW180 == 2)
+//  matrix.setRotation(3, 2);                   // The same hold for the last display (set via integer)
 }
 
 int wait = 50;

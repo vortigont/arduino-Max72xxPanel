@@ -42,13 +42,12 @@ Max72xxPanel::Max72xxPanel(byte csPin, byte hDisplays, byte vDisplays) : Adafrui
   Max72xxPanel::hDisplays = hDisplays;
   Max72xxPanel::bitmapSize = displays << 3;
 
-  Max72xxPanel::bitmap = (byte*)malloc(bitmapSize);
-  Max72xxPanel::matrixRotation = (byte*)malloc(displays);
+  Max72xxPanel::bitmap = (byte*)calloc(bitmapSize, sizeof(byte));
+  Max72xxPanel::matrixRotation = (byte*)calloc(displays, sizeof(byte));
   Max72xxPanel::matrixPosition = (byte*)malloc(displays);
 
   for ( byte display = 0; display < displays; display++ ) {
   	matrixPosition[display] = display;
-  	matrixRotation[display] = 0;
   }
 
   SPI.begin();
@@ -56,9 +55,7 @@ Max72xxPanel::Max72xxPanel(byte csPin, byte hDisplays, byte vDisplays) : Adafrui
 //SPI.setDataMode(SPI_MODE0);
   pinMode(SPI_CS, OUTPUT);
 
-  // Clear the screen
-  fillScreen(0);
-
+  // reset matrix modules
   reset();
 }
 
@@ -66,10 +63,26 @@ void Max72xxPanel::setPosition(byte display, byte x, byte y) {
 	matrixPosition[x + hDisplays * y] = display;
 }
 
-void Max72xxPanel::setRotation(byte display, byte rotation) {
+/*
+ * Define if and how the displays are rotated. The first display
+ * (0) is the one closest to the Arduino. rotation can be:
+ *   0: no rotation
+ *   1: 90 degrees clockwise
+ *   2: 180 degrees
+ *   3: 90 degrees counter clockwise
+ */
+void Max72xxPanel::setRotation(const byte display, const byte rotation) {
 	matrixRotation[display] = rotation;
 }
+void Max72xxPanel::setRotation(const byte display, const Rotation rotation){
+	setRotation (display, (byte)rotation);
+};
 
+/*
+ * Implementation of Adafruit's setRotation(). Probably, you don't
+ * need this function as you can achieve the same result by using
+ * the previous two functions.
+ */
 void Max72xxPanel::setRotation(uint8_t rotation) {
 	Adafruit_GFX::setRotation(rotation);
 }
@@ -86,16 +99,10 @@ void Max72xxPanel::fillScreen(uint16_t color) {
   memset(bitmap, color ? 0xff : 0, bitmapSize);
 }
 
-void Max72xxPanel::drawPixel(const int16_t xx, const int16_t yy, const uint16_t color) {
-	// Operating in bytes is faster and takes less code to run. We don't
-	// need values above 200, so switch from 16 bit ints to 8 bit unsigned
-	// ints (bytes).
-	// Keep xx as int16_t so fix 16 panel limit
-	int16_t x = xx;
-	int16_t y = yy;
+void Max72xxPanel::drawPixel(int16_t x, int16_t y, const uint16_t color) {
 
+	// Implement Adafruit's rotation.
 	if ( rotation ) {
-		// Implement Adafruit's rotation.
 		if ( rotation >= 2 ) {										// rotation == 2 || rotation == 3
 			x = _width - 1 - x;
 		}
@@ -109,8 +116,8 @@ void Max72xxPanel::drawPixel(const int16_t xx, const int16_t yy, const uint16_t 
 		}
 	}
 
+	// Ignore pixels outside the canvas.
 	if ( x < 0 || x >= WIDTH || y < 0 || y >= HEIGHT ) {
-		// Ignore pixels outside the canvas.
 		return;
 	}
 
