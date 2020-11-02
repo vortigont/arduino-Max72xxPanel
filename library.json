@@ -22,7 +22,7 @@
         "url": "https://github.com/vortigont/arduino-Max72xxPanel.git"
     },
     "platforms": ["avr", "espressif8266"],
-    "version": "1.0.0",
+    "version": "1.0.1",
     "dependencies": {
         "Adafruit BusIO": "*",
         "Adafruit-GFX-Library-cyr": "https://github.com/vortigont/Adafruit-GFX-Library.git#cyrfont"
